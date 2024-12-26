@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Dashboard</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #333;
+            text-align: center;
+        }
+        .dashboard { 
+            display: flex; 
+            flex-wrap: wrap; 
+            justify-content: center;
+        }
+        .device { 
+            border: 1px solid #ddd; 
+            margin: 10px; 
+            padding: 15px; 
+            width: 200px; 
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .device h3 {
+            margin-top: 0;
+            color: #2c3e50;
+        }
+        .device p {
+            margin: 5px 0;
+            color: #34495e;
+        }
+        .device button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .device button:hover {
+            background-color: #2980b9;
+        }
+        .logs {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        #logContent {
+            height: 200px;
+            overflow-y: scroll;
+            font-family: monospace;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #eee;
+        }
+    </style>
+</head>
+<body>
+    <h1>Smart Home Dashboard</h1>
+    <div class="dashboard" id="dashboard"></div>
+    <div class="logs">
+        <h2>System Logs</h2>
+        <div id="logContent"></div>
+    </div>
+
+    <script>
+        function updateDashboard() {
+            fetch('/api/devices')
+                .then(response => response.json())
+                .then(devices => {
+                    const dashboard = document.getElementById('dashboard');
+                    dashboard.innerHTML = '';
+                    devices.forEach(device => {
+                        const deviceElement = document.createElement('div');
+                        deviceElement.className = 'device';
+                        deviceElement.innerHTML = `
+                            <h3>${device.name}</h3>
+                            <p>Type: ${device.type}</p>
+                            <p>Status: ${device.value}</p>
+                            <button onclick="controlDevice(${device.id})">Control</button>
+                        `;
+                        dashboard.appendChild(deviceElement);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching device data:', error);
+                    document.getElementById('dashboard').innerHTML = '<p>Error loading device data. Please try again later.</p>';
+                });
+        }
+
+        function updateLogs() {
+            fetch('/api/logs')
+                .then(response => response.json())
+                .then(logs => {
+                    const logContent = document.getElementById('logContent');
+                    logContent.innerHTML = logs.map(log => `<div>${log}</div>`).join('');
+                    logContent.scrollTop = logContent.scrollHeight;
+                })
+                .catch(error => {
+                    console.error('Error fetching logs:', error);
+                    document.getElementById('logContent').innerHTML = '<p>Error loading logs. Please try again later.</p>';
+                });
+        }
+
+        function controlDevice(id) {
+            const action = prompt("Enter control action:");
+            if (action) {
+                fetch('/api/control', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({id: id, action: action}),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    alert(data.message || data.error);
+                })
+                .catch(error => {
+                    console.error('Error controlling device:', error);
+                    alert('Error controlling device. Please try again.');
+                });
+            }
+        }
+
+        updateDashboard();
+        updateLogs();
+        setInterval(updateDashboard, 5000); // Update every 5 seconds
+        setInterval(updateLogs, 5000); // Update logs every 5 seconds
+    </script>
+</body>
+</html>
