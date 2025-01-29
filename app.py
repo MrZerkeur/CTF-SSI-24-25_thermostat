@@ -48,15 +48,9 @@ def update_device_data():
         elif device["type"] == "door":
             device["value"] = random.choice(["Open", "Closed"])
 
-    # Générer un nouveau log
     logs.append(generate_log())
-    if len(logs) > 100:  # Garder seulement les 100 derniers logs
+    if len(logs) > 100:
         logs.pop(0)
-
-    # Cacher le flag dans les données (exemple simple)
-    if random.random() < 0.1:  # 10% de chance à chaque mise à jour
-        encoded_char = base64.b64encode(hidden_flag[int(time.time()) % len(hidden_flag)].encode()).decode()
-        devices[0]["value"] = f"22.{encoded_char}"
 
 @app.route('/')
 def home():
