@@ -71,8 +71,14 @@ def get_logs():
 
 @app.route('/api/control', methods=['POST'])
 def control_device():
+    conn = sqlite3.connect('database.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT uuid FROM users WHERE username = ?", ('Charlie',))
+    result = cursor.fetchone()
+    conn.close()
+    charlie_uuid = result[0]
     data = request.json
-    if data['uuid'] == "a14118b0-7e79-462f-a365-10848d32624a" and data['mode'] == "debug":
+    if data['uuid'] == charlie_uuid and data['mode'] == "debug":
         return jsonify({"message": f"Debug mode: {hidden_flag}"})
     return jsonify({"error": "Invalid request",
                     'message': 'Awaited format : {"uuid": "*something*", "mode": "*mode here*"}'}), 400
