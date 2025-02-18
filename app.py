@@ -1,8 +1,9 @@
 from flask import Flask, jsonify, request, render_template, redirect, session
 import random
 import time
-import base64
+import uuid
 import sqlite3
+
 
 app = Flask(__name__)
 app.secret_key = '9f92b0f075dbbb40c9ed401a52236191b1cba733893d410bdbf43631c2eff139'
@@ -15,8 +16,8 @@ devices = [
     {"id": 4, "name": "Garage Door", "type": "door", "value": "Closed"}
 ]
 
-# Flag caché (à modifier selon vos besoins)
-hidden_flag = "RETRO{H1DD3N_1N_10T_D4T4}"
+
+hidden_flag = "RETRO{3XPLOIT_D@T@BAS3}"
 
 # Logs simulés
 logs = []
@@ -24,12 +25,29 @@ logs = []
 def init_db():
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
-    cursor.execute('''CREATE TABLE IF NOT EXISTS users (
-                        id INTEGER PRIMARY KEY AUTOINCREMENT,
-                        username TEXT UNIQUE,
-                        password TEXT)''')
+
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            uuid TEXT UNIQUE,
+            username TEXT UNIQUE,
+            password TEXT
+        )
+    ''')
     conn.commit()
-    cursor.execute("INSERT OR IGNORE INTO users (username, password) VALUES ('admin', 'password123')")  # Weak creds
+
+    admin_uuid = str(uuid.uuid4())
+    cursor.execute(
+        "INSERT OR IGNORE INTO users (uuid, username, password) VALUES (?, ?, ?)",
+        (admin_uuid, 'administrator', '8Xu0c:2z&-u>Z:>?2$`4|Z`lmTa7H+')
+    )
+
+    charlie_uuid = str(uuid.uuid4())
+    cursor.execute(
+        "INSERT OR IGNORE INTO users (uuid, username, password) VALUES (?, ?, ?)",
+        (charlie_uuid, 'Charlie', 'T-n*08XF&0/;gp8b!yk|')
+    )
+
     conn.commit()
     conn.close()
 
@@ -112,4 +130,5 @@ def admin_panel():
     return render_template('admin-panel.html')
 
 if __name__ == '__main__':
+    init_db()
     app.run(debug=True)
