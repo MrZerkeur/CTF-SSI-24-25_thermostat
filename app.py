@@ -37,15 +37,17 @@ def init_db():
     conn.commit()
 
     admin_uuid = str(uuid.uuid4())
+    shortened_admin_uuid = admin_uuid.split('-', 1)[0]
     cursor.execute(
         "INSERT OR IGNORE INTO users (uuid, username, password) VALUES (?, ?, ?)",
-        (admin_uuid, 'administrator', '8Xu0c:2z&-u>Z:>?2$`4|Z`lmTa7H+')
+        (shortened_admin_uuid, 'administrator', 'e5da707b29991419c7b1239785c0c1734906c44d6d881616f7852e836df20842')
     )
 
     charlie_uuid = str(uuid.uuid4())
+    shortened_charlie_uuid = charlie_uuid.split('-', 1)[0]
     cursor.execute(
         "INSERT OR IGNORE INTO users (uuid, username, password) VALUES (?, ?, ?)",
-        (charlie_uuid, 'Charlie', 'T-n*08XF&0/;gp8b!yk|')
+        (shortened_charlie_uuid, 'Charlie', '2ffe47d4c5f48453695511299ae7be375996fa0065237ad534ed05e241818185')
     )
 
     conn.commit()
