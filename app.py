@@ -131,6 +131,4 @@ def admin_panel():
         return redirect('/very-annoying-path-for-admin-login')
     return render_template('admin-panel.html')
 
-if __name__ == '__main__':
-    init_db()
-    app.run(debug=True)
+init_db()
