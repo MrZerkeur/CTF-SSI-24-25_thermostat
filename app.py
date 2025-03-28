@@ -30,8 +30,7 @@ def init_db():
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             uuid TEXT UNIQUE,
-            username TEXT UNIQUE,
-            password TEXT
+            username TEXT UNIQUE
         )
     ''')
     conn.commit()
@@ -39,15 +38,15 @@ def init_db():
     admin_uuid = str(uuid.uuid4())
     shortened_admin_uuid = admin_uuid.split('-', 1)[0]
     cursor.execute(
-        "INSERT OR IGNORE INTO users (uuid, username, password) VALUES (?, ?, ?)",
-        (shortened_admin_uuid, 'administrator', 'e5da707b29991419c7b1239785c0c1734906c44d6d881616f7852e836df20842')
+        "INSERT OR IGNORE INTO users (uuid, username) VALUES (?, ?)",
+        (shortened_admin_uuid, 'administrator')
     )
 
     charlie_uuid = str(uuid.uuid4())
     shortened_charlie_uuid = charlie_uuid.split('-', 1)[0]
     cursor.execute(
-        "INSERT OR IGNORE INTO users (uuid, username, password) VALUES (?, ?, ?)",
-        (shortened_charlie_uuid, 'Charlie', '2ffe47d4c5f48453695511299ae7be375996fa0065237ad534ed05e241818185')
+        "INSERT OR IGNORE INTO users (uuid, username) VALUES (?, ?)",
+        (shortened_charlie_uuid, 'Charlie')
     )
 
     conn.commit()
